@@ -1,0 +1,54 @@
+div {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	font-family: 'Roboto Mono', monospace;
+  }
+  
+  .example-1 .form-group{padding:1em;margin:1em}
+  .example-1 input[type=file]{outline:0;pointer-events:none;user-select:none}
+  .example-1 .label{width:250px;border:2px dashed grey;border-radius:5px;display:block;padding:1.2em;transition:border 300ms ease;cursor:pointer;text-align:center}
+  .example-1 .label i{display:block;font-size:42px;padding-bottom:16px}
+  .example-1 .label i,.example-1 .label .title{color:grey;transition:200ms color}
+  .example-1 .label:hover{border:2px solid #000}
+  .example-1 .label:hover i,.example-1 .label:hover .title{color:#000}
+  
+  input[type=submit] {
+	background-color: #47c5aa;
+	border: none;
+	padding: 16px 32px;
+	text-decoration: none;
+	align-items: center;
+	cursor: pointer;
+	margin-left: 30%;
+  
+  }
+  
+  a {
+	outline: none;
+	text-decoration: none;
+	display: inline-block;
+	width: 19.5%;
+	margin-right: 0.625%;
+	text-align: center;
+	line-height: 3;
+	color: black;
+  }
+  
+  li:last-child a {
+	margin-right: 0;
+  }
+  
+  a:link, a:visited, a:focus {
+	background: #47c5aa;
+  }
+  
+  a:hover {
+	background: orange;
+  }
+  
+  a:active {
+	background: #BBBBBB;
+	color: white;
+  }
