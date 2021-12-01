@@ -1,6 +1,7 @@
 import imghdr
 import os
 import uuid
+import re
 from flask import Flask, render_template, request, redirect, url_for, abort, \
     send_from_directory, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
@@ -53,21 +54,39 @@ def index():
     return render_template('upload.html', files=files)
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def upload_files():
-    uploaded_file = request.files['file']
-    filename = secure_filename(uploaded_file.filename)
-    if filename != '':
-        file_ext = os.path.splitext(filename)[1]
-        if file_ext not in app.config['UPLOAD_EXTENSIONS'] or \
-                file_ext != validate_image(uploaded_file.stream):
-            return "Invalid image", 400
-        # print('filename: '+filename)
-        lnk = str(uuid.uuid4())
-        db.engine.execute("INSERT INTO T_LINK(PK_ID, PV_PATH, V_NAME) VALUES('{}', '{}', '{}')".format(lnk, os.path.join(app.config['UPLOAD_PATH'], lnk), filename))
-        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], lnk))
-        # print('data: ' + str(db.engine.execute('SELECT * FROM T_LINK').fetchall()))
-    return '', 204
+    if request.method == 'POST':
+        uploaded_file = request.files['file']
+        filename = secure_filename(uploaded_file.filename)
+        if filename != '':
+            file_ext = os.path.splitext(filename)[1]
+            if file_ext not in app.config['UPLOAD_EXTENSIONS'] or \
+                    file_ext != validate_image(uploaded_file.stream):
+                return "Invalid image", 400
+            lnk = str(uuid.uuid4())
+            #region Самая "долгая" часть программы, которую имеет смысл ускорять
+            db.engine.execute("INSERT INTO T_LINK(PK_ID, PV_PATH, V_NAME) VALUES('{}', '{}', '{}')".format(lnk,
+                                                                                                           os.path.join(
+                                                                                                               app.config[
+                                                                                                                   'UPLOAD_PATH'],
+                                                                                                               lnk),
+                                                                                                           filename))
+            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], lnk))
+            #endregion
+        return '', 204
+    elif request.method == 'GET':
+        requestData = request.get_json()
+        interestedID = requestData['id']  # TODO: логическая загвоздка - мы получаем картинку по id или по названию? Показывать id небезопасно, а значит пользователь не должен его ззнать, тем временем название изображения не гарантирует его уникальность
+        #print('debug: ' + str(requestData))
+        if not re.fullmatch(r'[^.,/-;\\]', interestedID):
+            return 'Not Acceptable: Bad data', 406
+        query = list(db.engine.execute("SELECT * FROM T_LINK WHERE PK_ID = '{}'".format(interestedID)).fetchall())
+        if (len(query) != 0):
+            return query, 200
+        #print('data: ' + str(query))
+        return 'Empty query', 200
+    return 'Bad request: Unimplemented method', 400
 
 
 @app.route('/uploads/<filename>')
