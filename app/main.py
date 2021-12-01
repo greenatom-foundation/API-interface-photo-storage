@@ -19,6 +19,8 @@ def initDB():
                           " PV_PATH         VARCHAR(255) NOT NULL,"
                           " PRIMARY KEY (PK_ID)"
                           ")")
+    if not os.path.exists(os.path.join(os.path.dirname(__file__), 'uploads')):
+        os.makedirs('uploads')
 
 
 app = Flask(__name__)
