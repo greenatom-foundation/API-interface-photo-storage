@@ -1,3 +1,4 @@
+
 div {
 	display: flex;
 	justify-content: center;
@@ -22,33 +23,42 @@ div {
 	align-items: center;
 	cursor: pointer;
 	margin-left: 30%;
-  
+    border-radius: 5px; /* Уголки */
   }
-  
-  a {
-	outline: none;
-	text-decoration: none;
-	display: inline-block;
-	width: 19.5%;
-	margin-right: 0.625%;
-	text-align: center;
-	line-height: 3;
-	color: black;
-  }
-  
-  li:last-child a {
-	margin-right: 0;
-  }
-  
-  a:link, a:visited, a:focus {
-	background: #47c5aa;
-  }
-  
-  a:hover {
-	background: orange;
-  }
-  
-  a:active {
-	background: #BBBBBB;
-	color: white;
-  }
+
+
+  .d7:after {content:""; clear:both; display:table}
+.d7 form {
+  width: auto;
+  float: right;
+  margin-right: 30px;
+}
+.d7 input {
+  width: 250px;
+  height: 42px;
+  padding-left: 15px;
+  border-radius: 42px;
+  border: 2px solid #324b4e;
+  background: #F9F0DA;
+  outline: none;
+  position: relative;
+  transition: .3s linear;
+  background-color: #bee4dc;
+}
+.d7 input:focus {
+  width: 300px;
+}
+.d7 button {
+  width: 42px;
+  height: 42px;
+  background: none;
+  border: none;
+  position: absolute;
+  top: -2px;
+  right: 0;
+}
+.d7 button:before{
+  content: "\f002";
+  font-family: FontAwesome;
+  color: #324b4e;
+}
