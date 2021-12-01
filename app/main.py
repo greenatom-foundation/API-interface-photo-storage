@@ -1,7 +1,7 @@
 import imghdr
 import os
 import uuid
-import re
+import base64
 from flask import Flask, render_template, request, redirect, url_for, abort, \
     send_from_directory, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
@@ -17,7 +17,7 @@ def initDB():
     if len(list(db.engine.execute("SELECT * FROM sqlite_master where type = 'table'").fetchall())) == 0:
         db.engine.execute("CREATE TABLE T_LINK"
                           "("
-                          " PK_ID           VARCHAR(36) NOT NULL,"
+                          " PK_ID           VARCHAR(60) NOT NULL,"
                           " PV_PATH         VARCHAR(255) NOT NULL,"
                           " V_NAME          VARCHAR(255) NULL,"
                           " PRIMARY KEY (PK_ID)"
@@ -54,7 +54,17 @@ def index():
     return render_template('upload.html', files=files)
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/get', methods=['POST'])
+def get_data():
+    requestData = request.get_json()
+    interestedID = requestData['id']  # TODO: логическая загвоздка - мы получаем картинку по id или по названию? Показывать id небезопасно, а значит пользователь не должен его ззнать, тем временем название изображения не гарантирует его уникальность
+    query = list(db.engine.execute("SELECT PK_ID, PV_PATH, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(interestedID)).fetchall())
+    # print('data: ' + str(query))
+    if len(query) != 0:
+        return jsonify({'id': query[0][0], 'name': query[0][2]})  # , 'file': base64.encodebytes(open(query[0][1], mode='rb').read()).decode('utf-8')
+    return 'Empty query', 200
+
+@app.route('/', methods=['POST'])
 def upload_files():
     if request.method == 'POST':
         uploaded_file = request.files['file']
@@ -65,34 +75,26 @@ def upload_files():
                     file_ext != validate_image(uploaded_file.stream):
                 return "Invalid image", 400
             lnk = str(uuid.uuid4())
+            # print(lnk)
             #region Самая "долгая" часть программы, которую имеет смысл ускорять
             db.engine.execute("INSERT INTO T_LINK(PK_ID, PV_PATH, V_NAME) VALUES('{}', '{}', '{}')".format(lnk,
                                                                                                            os.path.join(
                                                                                                                app.config[
                                                                                                                    'UPLOAD_PATH'],
-                                                                                                               lnk),
+                                                                                                               lnk+file_ext),
                                                                                                            filename))
-            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], lnk))
+            uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], lnk+file_ext))
             #endregion
         return '', 204
-    elif request.method == 'GET':
-        requestData = request.get_json()
-        interestedID = requestData['id']  # TODO: логическая загвоздка - мы получаем картинку по id или по названию? Показывать id небезопасно, а значит пользователь не должен его ззнать, тем временем название изображения не гарантирует его уникальность
-        #print('debug: ' + str(requestData))
-        if not re.fullmatch(r'[^.,/-;\\]', interestedID):
-            return 'Not Acceptable: Bad data', 406
-        query = list(db.engine.execute("SELECT * FROM T_LINK WHERE PK_ID = '{}'".format(interestedID)).fetchall())
-        if (len(query) != 0):
-            return query, 200
-        #print('data: ' + str(query))
-        return 'Empty query', 200
     return 'Bad request: Unimplemented method', 400
 
 
+'''
 @app.route('/uploads/<filename>')
 def upload(filename):
     return send_from_directory(app.config['UPLOAD_PATH'], filename)
+'''
 
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1')
+    app.run(host='0.0.0.0')
