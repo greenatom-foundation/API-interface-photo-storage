@@ -2,8 +2,8 @@ import imghdr
 import os
 import uuid
 import base64
-from flask import Flask, render_template, request, redirect, url_for, abort, \
-    send_from_directory, jsonify, Response
+from flask import Flask, render_template, request, \
+    jsonify  # redirect, url_for, abort, send_from_directory, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
@@ -63,6 +63,7 @@ def get_data():
     if len(query) != 0:
         return jsonify({'id': query[0][0], 'name': query[0][2]})  # , 'file': base64.encodebytes(open(query[0][1], mode='rb').read()).decode('utf-8')
     return 'Empty query', 200
+
 
 @app.route('/', methods=['POST'])
 def upload_files():
