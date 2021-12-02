@@ -2,23 +2,32 @@
   <head>
       <meta charset="UTF-8">
     <title>Загрузка фото</title>
+    <link rel="stylesheet" href="static/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.js"></script>
   </head>
   <body>
-    <h1>File Upload</h1>
-    <form action="{{ url_for('upload_files') }}" class="dropzone">
-    </form>
+    <div class="split left">
+      <div class="centered">
+        <h1>Загрузка фотографий</h1>
+        <form action="{{ url_for('upload_files') }}" class="dropzone"></form>
+      </div>
+    </div>
 
-    <form method="GET" action={{url_for('display')}}>
-		<input placeholder="Поиск" name="id" type="search">
-		<input type="submit">
-	</form>
-    {% if filename %}
-    <img src="{{ url_for('send_file', filename=filename) }}" />
-    {% else %}
-    <h1>Нет причины для вывода изображения</h1>
-    {% endif %}
+    <div class="split right">
+      <div class="centered">
+        <form method="GET" action={{url_for('display')}}>
+          <input placeholder="Поиск" name="id" type="search">
+		  <input type="submit">
+	    </form>
+
+        {% if filename %}
+          <img src="{{ url_for('send_file', filename=filename) }}" />
+        {% else %}
+          <h1>Нет причины для вывода изображения</h1>
+        {% endif %}
+      </div>
+    </div>
 
   </body>
 </html>
