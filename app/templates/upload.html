@@ -1,7 +1,7 @@
 <html>
   <head>
       <meta charset="UTF-8">
-    <title>File Upload</title>
+    <title>Загрузка фото</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.js"></script>
   </head>
@@ -10,10 +10,15 @@
     <form action="{{ url_for('upload_files') }}" class="dropzone">
     </form>
 
-    <form method="POST" action={{url_for('get_data')}}>
-		<input placeholder="Поиск" type="search">
+    <form method="GET" action={{url_for('display')}}>
+		<input placeholder="Поиск" name="id" type="search">
 		<input type="submit">
 	</form>
+    {% if filename %}
+    <img src="{{ url_for('send_file', filename=filename) }}" />
+    {% else %}
+    <h1>Нет причины для вывода изображения</h1>
+    {% endif %}
 
   </body>
 </html>

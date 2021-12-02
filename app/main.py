@@ -3,7 +3,7 @@ import os
 import uuid
 import base64
 from flask import Flask, render_template, request, \
-    jsonify  # redirect, url_for, abort, send_from_directory, send_file
+    jsonify, send_from_directory  # redirect, url_for, abort, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
@@ -88,6 +88,30 @@ def upload_files():
             #endregion
         return '', 204
     return 'Bad request: Unimplemented method', 400
+
+@app.route('/display', methods=['POST', 'GET'])
+def display():
+    if request.method == 'POST':
+        id = request.form["id"]
+        print("idp", id)
+    else:
+        id = request.args.get('id')
+        print("idg", id)
+    filename = str(id)
+
+    query = list(db.engine.execute("SELECT PK_ID, PV_PATH, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(id)).fetchall())
+    if len(query) != 0:
+        filename = str(filename) + str(os.path.splitext(query[0][2])[-1])
+        return render_template('upload.html', filename = filename)
+    else:
+        return render_template('upload.html')
+
+@app.route('/uploads/<filename>')
+def send_file(filename):
+    return send_from_directory('uploads', filename)
+
+
+
 
 
 '''
