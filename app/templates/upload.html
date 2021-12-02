@@ -17,7 +17,7 @@
     <div class="split right">
       <div class="centered">
         <form method="GET" action={{url_for('display')}}>
-          <div class="d7"><input placeholder="Поиск" name="id" type="search" onkeyup="filtration()" ></div>
+          <div class="d7"><input placeholder="Поиск по id или имени + Enter" name="id" type="search" onkeyup="filtration()" ></div>
 	    </form>
 
         {% if filename %}

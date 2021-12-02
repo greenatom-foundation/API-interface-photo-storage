@@ -95,14 +95,18 @@ def display():
         id = request.form["id"]
     else:
         id = request.args.get('id')
-    filename = str(id)
 
-    query = list(db.engine.execute("SELECT PK_ID, PV_PATH, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(id)).fetchall())
+    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK WHERE V_NAME = '{}'".format(id)).fetchall())
     if len(query) != 0:
-        filename = str(filename) + str(os.path.splitext(query[0][2])[-1])
-        return render_template('upload.html', filename = filename)
+        filename = str(query[0][0]) + str(os.path.splitext(query[0][1])[-1])
+        return render_template('upload.html', filename=filename)
     else:
-        return render_template('upload.html')
+        query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(id)).fetchall())
+        if len(query) != 0:
+            filename = str(query[0][0]) + str(os.path.splitext(query[0][1])[-1])
+            return render_template('upload.html', filename=filename)
+        else:
+            return render_template('upload.html')
 
 @app.route('/uploads/<filename>')
 def send_file(filename):
