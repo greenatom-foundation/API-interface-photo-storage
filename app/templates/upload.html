@@ -26,14 +26,15 @@
           <h1>Нет причины для вывода изображения</h1>
         {% endif %}
 
+        <br>
         <form method="GET" action={{url_for('get_value')}}>
-          <input type="submit" value="Вывод данных фото">
+          <input type="submit" value="Вывод информации о фотографиях ">
 	    </form>
          {% if value %}
             <table>
-              <tr><th>Id</th><th>Имя файла</th></tr>
+              <tr><th>Номер</th><th>Id</th><th>Имя файла</th></tr>
               {%for i in range(0, len)%}
-              <tr><td>{{value[i][0]}}</td><td>{{value[i][1]}}</td></tr>
+              <tr><td>{{i}}</td><td>{{value[i][0]}}</td><td>{{value[i][1]}}</td></tr>
               {%endfor%}
             </table>
           {% else %}
