@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 bool _conection = false;
-final String _Adress = 'http://192.168.124.32:5000/';
-final String _getAddress = 'http://192.168.124.32:5000/get';
-final String _postAddress = 'http://192.168.124.32:5000/';
+final String _Adress = 'http://185.43.6.193:5000/';
+final String _getAddress = 'http://185.43.6.193:5000/get';
+final String _postAddress = 'http://185.43.6.193:5000/';
 
 Future<http.Response> _getData(String id){
   try{

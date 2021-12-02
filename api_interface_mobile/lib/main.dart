@@ -10,11 +10,12 @@ import 'package:image_picker/image_picker.dart';
 void main() {
   runApp(MyApp());
 }
-
+TextStyle buttonTxt = TextStyle(fontSize: 12, color: Colors.white);
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Запрос данных с сервера',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -43,13 +44,13 @@ class _startPage extends State<startPage> {
             height: 60,
             onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>addDataPage()));
-            }, child: Text("Интерфейс загрузки изображений"),),
+            }, child: Text("Интерфейс загрузки изображений", style: buttonTxt.copyWith(fontSize: 16),),),
           MaterialButton(
             color: Theme.of(context).primaryColor.withOpacity(0.5),
             height: 60,
             onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>showDataPage()));
-            }, child: Text("Интерфейс проверки изображений"),),
+            }, child: Text("Интерфейс проверки изображений", style: buttonTxt.copyWith(fontSize: 16)),),
         ],
       ),
     );
@@ -98,15 +99,8 @@ class _showDataPageState extends State<showDataPage> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
-                width: 80,
-                height: 80,
-                color: Colors.lightGreen,
-                alignment: Alignment.center,
-                child: _image!=null?Image.memory(_image, width: 80, height: 80,):Text('empty image', textAlign: TextAlign.center,),
-              ), //151db191-759a-42f2-99d7-0594eaf18d5e
               Text(
                 'Введите ID искомой записи',
               ),
@@ -168,30 +162,27 @@ class _addDataPage extends State<addDataPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Выберите изображение из галереи',
-              ),
               MaterialButton(onPressed: ()async{
                   await _getImage(ImageSource.gallery);
                   setState(() {});
-                }, child: Text(status), height: 40, color: Theme.of(context).primaryColor,),
+                }, child: Text(status, style: buttonTxt.copyWith(fontSize: 16)), height: 40, color: Theme.of(context).primaryColor,),
               MaterialButton(
                 height: 20, color: Theme.of(context).primaryColor.withOpacity(0.7),
                 onPressed: (){
                   _addData();
-                }, child: Text('Загрузить одно изображение на сервер'),),
+                }, child: Text('Загрузить одно изображение на сервер', style: buttonTxt),),
               MaterialButton(
                 height: 20, color: Theme.of(context).primaryColor.withOpacity(0.8),
                 onPressed: (){
                   for (int i = 0; i<10; ++i)
                     _addData();
-                }, child: Text('Загрузить 10 изображений на сервер'),),
+                }, child: Text('Загрузить 10 изображений на сервер', style: buttonTxt),),
               MaterialButton(
                 height: 20, color: Theme.of(context).primaryColor.withOpacity(0.9),
                 onPressed: (){
                   for (int i = 0; i<100; ++i)
                     _addData();
-                }, child: Text('Загрузить 100 изображений на сервер'),),
+                }, child: Text('Загрузить 100 изображений на сервер', style: buttonTxt),),
             ],
           ),
         ),
