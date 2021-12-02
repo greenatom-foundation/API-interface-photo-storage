@@ -93,10 +93,8 @@ def upload_files():
 def display():
     if request.method == 'POST':
         id = request.form["id"]
-        print("idp", id)
     else:
         id = request.args.get('id')
-        print("idg", id)
     filename = str(id)
 
     query = list(db.engine.execute("SELECT PK_ID, PV_PATH, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(id)).fetchall())
@@ -110,7 +108,13 @@ def display():
 def send_file(filename):
     return send_from_directory('uploads', filename)
 
-
+@app.route('/get_value', methods=['POST', 'GET'])
+def get_value():
+    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK ").fetchall())
+    if len(query) != 0:
+        return render_template('upload.html', value = query, len = len(query))
+    else:
+        return render_template('upload.html')
 
 
 
