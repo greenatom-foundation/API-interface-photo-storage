@@ -73,3 +73,7 @@ h1 {
   font-family: FontAwesome;
   color: #324b4e;
 }
+
+table {
+	font-family: 'Roboto Mono', monospace;
+  }
