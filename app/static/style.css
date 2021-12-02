@@ -1,0 +1,88 @@
+/* Split the screen in half */
+.split {
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+/* Control the left side */
+.left {
+  left: 0;
+  background-color: #DCDCDC
+}
+
+/* Control the right side */
+.right {
+  right: 0;
+}
+
+/* If you want the content centered horizontally and vertically */
+.centeredL {
+  position: absolute;
+  top: 200px;
+  left: 150px;
+  right: 150px;
+  text-align: center;
+}
+.centeredR {
+  position: absolute;
+  top: 200px;
+  left: 90px;
+  right: 90px;
+  text-align: center;
+}
+
+/* Style the image inside the centered container, if needed */
+.centeredL img {
+  width: 100%;
+}
+.centeredR img {
+  width: 100%;
+}
+
+h1 {
+	font-family: 'Roboto Mono', monospace;
+  }
+
+  .d7:after {content:""; clear:both; display:table}
+.d7 form {
+  width: auto;
+  float: right;
+  margin-right: 30px;
+}
+.d7 input {
+  width: 250px;
+  height: 42px;
+  padding-left: 15px;
+  border-radius: 42px;
+  border: 2px solid #324b4e;
+  background: #F9F0DA;
+  outline: none;
+  position: relative;
+  transition: .3s linear;
+  background-color: #DCDCDC;
+}
+.d7 input:focus {
+  width: 300px;
+}
+.d7 button {
+  width: 42px;
+  height: 42px;
+  background: none;
+  border: none;
+  position: absolute;
+  top: -2px;
+  right: 0;
+}
+.d7 button:before{
+  content: "\f002";
+  font-family: FontAwesome;
+  color: #324b4e;
+}
+table {
+	font-family: 'Roboto Mono', monospace;
+  }
