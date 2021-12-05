@@ -10,7 +10,11 @@ import 'package:image_picker/image_picker.dart';
 void main() {
   runApp(MyApp());
 }
-TextStyle buttonTxt = TextStyle(fontSize: 12, color: Colors.white);
+
+
+TextStyle buttonTxt = TextStyle(fontSize: 16, color: Colors.white,);
+TextStyle headerTxt = TextStyle(fontSize: 20, color: Colors.white);
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,6 +25,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
+        appBar: AppBar(title: Text("AtomHack: team #10", style: headerTxt, textAlign: TextAlign.center,), centerTitle: true,),
         body: startPage(),
       ),
     );
@@ -39,18 +44,28 @@ class _startPage extends State<startPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          Expanded(child: SizedBox(), flex: 2,),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Image.asset('assets/atomLogo.png'),
+          ),
+          Expanded(child: SizedBox(), flex: 1,),
           MaterialButton(
             color: Theme.of(context).primaryColor,
             height: 60,
+            minWidth: MediaQuery.of(context).size.width*0.9,
             onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>addDataPage()));
-            }, child: Text("Интерфейс загрузки изображений", style: buttonTxt.copyWith(fontSize: 16),),),
+            }, child: Text("Интерфейс загрузки изображений", style: buttonTxt,),),
+          Expanded(child: SizedBox(), flex: 1,),
           MaterialButton(
+            minWidth: MediaQuery.of(context).size.width*0.9,
             color: Theme.of(context).primaryColor.withOpacity(0.5),
             height: 60,
             onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>showDataPage()));
-            }, child: Text("Интерфейс проверки изображений", style: buttonTxt.copyWith(fontSize: 16)),),
+            }, child: Text("Интерфейс проверки изображений", style: buttonTxt),),
+          Expanded(child: SizedBox(), flex: 3,),
         ],
       ),
     );
@@ -93,7 +108,7 @@ class _showDataPageState extends State<showDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Проверка изображений'),
+        title: Text('Проверка изображений', style: headerTxt),
       ),
       body: Center(
         child: Container(
@@ -131,18 +146,58 @@ class addDataPage extends StatefulWidget {
 }
 
 class _addDataPage extends State<addDataPage> {
-  String status = 'Выбрать';
   File _data;
+
+  Widget _imageBox(){
+    if (_data != null)
+      return Container(
+        width: MediaQuery.of(context).size.width*.8,
+        height: MediaQuery.of(context).size.width*.8,
+        color: Theme.of(context).primaryColor,
+        child: Stack(
+          children: [
+            Image.file(_data),
+            Align(
+              alignment: Alignment.topRight,
+              child: GestureDetector(
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  child: Icon(Icons.delete_forever, color: Colors.grey, size: 36,),
+                ),
+                onTap: (){
+                  setState(() {
+                    _data = null;
+                  });
+                },
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: MediaQuery.of(context).size.width*.8,
+                height: 40,
+                alignment: Alignment.bottomCenter,
+                child: Text("Preview", style: buttonTxt,),
+              ),
+            ),
+          ],
+        ),
+      );
+    return MaterialButton(onPressed: ()async{
+        await _getImage(ImageSource.gallery);
+        setState(() {});
+      }, child: Text("Выбрать", style: buttonTxt.copyWith(fontSize: 16)), height: 40, color: Theme.of(context).primaryColor,
+    );
+  }
 
   _getImage(ImageSource source)async{
     final _picked = await ImagePicker().pickImage(source: source, preferredCameraDevice: CameraDevice.rear);
     if (_picked!=null){
       _data =  File(_picked.path);
-      status = _picked.path;
     }
     else{
       _data = null;
-      status = 'Выбрать';
     }
   }
 
@@ -154,7 +209,7 @@ class _addDataPage extends State<addDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Загрузка изображений"),
+        title: Text("Загрузка изображений", style: headerTxt,),
       ),
       body: Center(
         child: Container(
@@ -162,23 +217,23 @@ class _addDataPage extends State<addDataPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              MaterialButton(onPressed: ()async{
-                  await _getImage(ImageSource.gallery);
-                  setState(() {});
-                }, child: Text(status, style: buttonTxt.copyWith(fontSize: 16)), height: 40, color: Theme.of(context).primaryColor,),
+              _imageBox(),
               MaterialButton(
-                height: 20, color: Theme.of(context).primaryColor.withOpacity(0.7),
+                minWidth: MediaQuery.of(context).size.width*.9,
+                padding: EdgeInsets.symmetric(vertical: 6), color: Theme.of(context).primaryColor.withOpacity(0.7),
                 onPressed: (){
                   _addData();
-                }, child: Text('Загрузить одно изображение на сервер', style: buttonTxt),),
+                }, child: Text('Загрузить изображение на сервер', style: buttonTxt),),
               MaterialButton(
-                height: 20, color: Theme.of(context).primaryColor.withOpacity(0.8),
+                minWidth: MediaQuery.of(context).size.width*.9,
+                padding: EdgeInsets.symmetric(vertical: 6), color: Theme.of(context).primaryColor.withOpacity(0.8),
                 onPressed: (){
                   for (int i = 0; i<10; ++i)
                     _addData();
                 }, child: Text('Загрузить 10 изображений на сервер', style: buttonTxt),),
               MaterialButton(
-                height: 20, color: Theme.of(context).primaryColor.withOpacity(0.9),
+                minWidth: MediaQuery.of(context).size.width*.9,
+                padding: EdgeInsets.symmetric(vertical: 6), color: Theme.of(context).primaryColor.withOpacity(0.9),
                 onPressed: (){
                   for (int i = 0; i<100; ++i)
                     _addData();
