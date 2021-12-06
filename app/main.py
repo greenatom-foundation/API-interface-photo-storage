@@ -3,10 +3,22 @@ import os
 import uuid
 import base64
 from flask import Flask, render_template, request, \
-    jsonify, send_from_directory  # redirect, url_for, abort, send_file
+    jsonify, send_from_directory, Response  # redirect, url_for, abort, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+import cv2
 
+
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
+app.config['UPLOAD_PATH'] = 'uploads'
+app.config['UPLOAD_CAMERA'] = 'uploads/camera'
+db = SQLAlchemy(app)
+video = cv2.VideoCapture(0)
+face_cascade = cv2.CascadeClassifier()
+# Load the pretrained model
+face_cascade.load(cv2.samples.findFile("static/haarcascade_frontalface_alt.xml"))
 
 def initDB():
     db_path = os.path.join(os.path.dirname(__file__), 'app.db')
@@ -25,14 +37,7 @@ def initDB():
     if not os.path.exists(os.path.join(os.path.dirname(__file__), 'uploads')):
         os.makedirs('uploads')
 
-
-app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
-app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
-app.config['UPLOAD_PATH'] = 'uploads'
-db = SQLAlchemy(app)
 initDB()
-
 
 def validate_image(stream):
     header = stream.read(512)
@@ -120,14 +125,44 @@ def get_value():
     else:
         return render_template('upload.html')
 
+@app.route('/video_feed')
+def video_feed():
+    global video
+    return Response(gen(video),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-'''
-@app.route('/uploads/<filename>')
-def upload(filename):
-    return send_from_directory(app.config['UPLOAD_PATH'], filename)
-'''
+def gen(video):
+    i = 0
+    while True:
+        success, image = video.read()
+        frame_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        frame_gray = cv2.equalizeHist(frame_gray)
+
+        faces = face_cascade.detectMultiScale(frame_gray)
+
+        for (x, y, w, h) in faces:
+            center = (x + w // 2, y + h // 2)
+            cv2.putText(image, "X: " + str(center[0]) + " Y: " + str(center[1]), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                        (255, 0, 0), 3)
+            image = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            faceROI = frame_gray[y:y + h, x:x + w]
+        ret, jpeg = cv2.imencode('.jpg', image)
+
+        frame = jpeg.tobytes()
+
+        if i % 5 == 0:
+            cv2.imwrite(os.path.join(app.config['UPLOAD_CAMERA'], str(i) + '.jpg'), image)
+        i += 1
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
+
+
