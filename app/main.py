@@ -5,6 +5,7 @@ import base64
 from flask import Flask, render_template, request, \
     jsonify, send_from_directory, Response  # redirect, url_for, abort, send_file
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.serving import WSGIRequestHandler
 from werkzeug.utils import secure_filename
 import cv2
 
@@ -185,6 +186,7 @@ def gen():
 
 
 if __name__ == "__main__":
+    WSGIRequestHandler.protocol_version = "HTTP/1.1"
     app.run(host='0.0.0.0')
 
 
