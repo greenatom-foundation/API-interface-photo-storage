@@ -93,6 +93,9 @@ class _showDataPageState extends State<showDataPage> {
       }
       setState(() {});
     }
+    else{
+      _getData();
+    }
   }
 
   _getData() async {
@@ -112,9 +115,6 @@ class _showDataPageState extends State<showDataPage> {
         ],
       ));
     }
-    //debugPrint('res: '+res.toString());
-    //_finalRes = res;
-    //_listData = Map.from(_finalRes);
     setState(() {});
   }
 
@@ -184,12 +184,15 @@ class _showDataPageState extends State<showDataPage> {
             children: <Widget>[
               SizedBox(height: 48,),
               Text(
-                'Введите ID искомой записи',
+                'Введите ID/название искомой записи',
               ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: TextFormField(
                   onChanged: (s){
+                    _search(s);
+                  },
+                  onSaved: (s){
                     _search(s);
                   },
                 ),
