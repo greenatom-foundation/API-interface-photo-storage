@@ -28,15 +28,33 @@ Future<http.Response> _getData(String id){
   }
 }
 
-Future<http.Response> _sendData(File data) async{
-  var request = new http.MultipartRequest("POST", Uri.parse(_postAddress));
-  await request.files.add(await http.MultipartFile('file', data.readAsBytes().asStream(), data.lengthSync(), filename: data.path.split('/').last));
+Future<http.Response> _getAllData(){
+  try{
+    return http.post(
+        Uri.parse(_getAddress+'all'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+    );}
+  catch(e){
+    exceptionHandler(e);
+    return null;
+  }
+}
 
-  debugPrint('data: ' + data.toString());
-  await request.send().then((response) {
-    if (response.statusCode == 200) print("Uploaded!");
-  });
-  debugPrint('request: ' + request.toString());
+Future<bool> _sendData(File data) async{ //http.Response
+  var request = new http.MultipartRequest("POST", Uri.parse(_postAddress));
+  request.files.add(http.MultipartFile('file', data.readAsBytes().asStream(), data.lengthSync(), filename: data.path.split('/').last));
+  var res = await request.send();
+  //debugPrint('response: ' + res.statusCode.toString());
+  if (res.statusCode == 204) {
+    //print("Uploaded!");
+    return true;
+  }
+  else{
+    debugPrint("Bad answer");
+    return false;
+  }
   /*
   try{
     return http.post(
@@ -56,10 +74,28 @@ Future<http.Response> _sendData(File data) async{
 }
 
 
-dataProvider(String id)async{
-  var res = await _getData(id);
-  debugPrint(res.body.toString());
-  return json.decode(res.body);
+dataProvider({String id})async{
+  try{
+    final result = await InternetAddress.lookup(_Adress);
+    if (result.isEmpty || result[0].rawAddress.isEmpty) {
+      debugPrint("Lookup error");
+      return false;
+    }
+    if (id!=null){
+      var res = await _getData(id);
+      //debugPrint(res.body.toString());
+      return json.decode(res.body);
+    }
+    else{
+      var res = await _getAllData();
+      //debugPrint(res.body.toString());
+      return json.decode(res.body);
+    }
+  }
+  catch (e) {
+    debugPrint("Exception: " + e.toString());
+    return false;
+  }
 /*
   try{
     final result = await InternetAddress.lookup(_Adress);
@@ -85,8 +121,20 @@ dataProvider(String id)async{
  */
 }
 
-sendProvider(File data)async{
-  _sendData(data);
+Future<bool> sendProvider(File data)async{
+  try{
+    final result = await InternetAddress.lookup(_Adress);
+    if (result.isEmpty || result[0].rawAddress.isEmpty) {
+      debugPrint("Lookup error");
+      return false;
+    }
+    bool res = await _sendData(data);
+    return res;
+  }
+  catch (e) {
+    debugPrint("Exception: " + e.toString());
+    return false;
+  }
 /*
   try{
     final result = await InternetAddress.lookup(_Adress);

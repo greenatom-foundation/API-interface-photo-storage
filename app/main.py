@@ -68,14 +68,24 @@ def index():
     return render_template('upload.html', files=files)
 
 
+@app.route('/getall', methods=['POST', 'GET'])
+def data():
+    res = {}
+    tmp = getAllData()
+    for i in range(len(tmp)):
+        res[i] = {}
+        res[i]["PK_ID"] = tmp[i]["PK_ID"]
+        res[i]["V_NAME"] = tmp[i]["V_NAME"]
+    return jsonify(res)
+
+
 @app.route('/get', methods=['POST'])
 def get_data():
     requestData = request.get_json()
     interestedID = requestData['id']  # TODO: логическая загвоздка - мы получаем картинку по id или по названию? Показывать id небезопасно, а значит пользователь не должен его ззнать, тем временем название изображения не гарантирует его уникальность
     query = list(db.engine.execute("SELECT PK_ID, PV_PATH, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(interestedID)).fetchall())
-    # print('data: ' + str(query))
     if len(query) != 0:
-        return jsonify({'id': query[0][0], 'name': query[0][2]})  # , 'file': base64.encodebytes(open(query[0][1], mode='rb').read()).decode('utf-8')
+        return jsonify({'id': query[0][0], 'name': query[0][2], 'file': base64.b64encode(open(query[0][1], mode='rb').read()).decode('utf-8')})  #
     return 'Empty query', 200
 
 
