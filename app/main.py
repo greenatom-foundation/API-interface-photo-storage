@@ -69,7 +69,7 @@ def index():
     return render_template('upload.html', files=files)
 
 
-@app.route('/getall', methods=['POST', 'GET'])
+@app.route('/postall', methods=['POST', 'GET'])
 def data():
     res = {}
     tmp = getAllData()
@@ -80,7 +80,7 @@ def data():
     return jsonify(res)
 
 
-@app.route('/get', methods=['POST'])
+@app.route('/post', methods=['POST'])
 def get_data():
     requestData = request.get_json()
     interestedID = requestData['id']  # TODO: логическая загвоздка - мы получаем картинку по id или по названию? Показывать id небезопасно, а значит пользователь не должен его ззнать, тем временем название изображения не гарантирует его уникальность

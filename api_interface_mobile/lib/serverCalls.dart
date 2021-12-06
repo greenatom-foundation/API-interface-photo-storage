@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-bool _conection = false;
-final String _Adress = 'http://185.43.6.193:5000/';
-final String _getAddress = 'http://185.43.6.193:5000/get';
-final String _postAddress = 'http://185.43.6.193:5000/';
+//bool _conection = false;
+final String _Adress = "185.43.6.193";//'185.43.6.193'; //
+final String _getAddress = "http://185.43.6.193:5000/post";//'http://185.43.6.193:5000/get';
+final String _postAddress = "http://185.43.6.193:5000/";//'http://185.43.6.193:5000/';
 
 Future<http.Response> _getData(String id){
   try{
@@ -79,7 +79,7 @@ dataProvider({String id})async{
     final result = await InternetAddress.lookup(_Adress);
     if (result.isEmpty || result[0].rawAddress.isEmpty) {
       debugPrint("Lookup error");
-      return false;
+      return {'exception':'lookup error'};
     }
     if (id!=null){
       var res = await _getData(id);
@@ -94,7 +94,7 @@ dataProvider({String id})async{
   }
   catch (e) {
     debugPrint("Exception: " + e.toString());
-    return false;
+    return {'exception':e.toString()};
   }
 /*
   try{
