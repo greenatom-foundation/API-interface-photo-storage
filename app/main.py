@@ -7,7 +7,6 @@ from flask import Flask, render_template, request, \
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 import cv2
-from threading import Lock
 
 
 app = Flask(__name__)
@@ -16,7 +15,6 @@ app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
 app.config['UPLOAD_PATH'] = 'uploads'
 app.config['UPLOAD_CAMERA'] = 'uploads/camera'
 db = SQLAlchemy(app)
-camlock = Lock()  # Блокировка нужна, чтобы нельзя было
 face_cascade = cv2.CascadeClassifier()
 # Load the pretrained model
 face_cascade.load(cv2.samples.findFile("static/haarcascade_frontalface_alt.xml"))
