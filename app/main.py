@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, \
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 import cv2
+from threading import Lock
 
 
 app = Flask(__name__)
@@ -15,7 +16,7 @@ app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
 app.config['UPLOAD_PATH'] = 'uploads'
 app.config['UPLOAD_CAMERA'] = 'uploads/camera'
 db = SQLAlchemy(app)
-video = cv2.VideoCapture(0)
+camlock = Lock()  # Блокировка нужна, чтобы нельзя было
 face_cascade = cv2.CascadeClassifier()
 # Load the pretrained model
 face_cascade.load(cv2.samples.findFile("static/haarcascade_frontalface_alt.xml"))
@@ -127,14 +128,15 @@ def get_value():
 
 @app.route('/video_feed')
 def video_feed():
-    global video
-    return Response(gen(video),
+    return Response(gen(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-def gen(video):
+def gen():
     i = 0
-    while True:
+    #while True:
+    video = cv2.VideoCapture(0)
+    while (video.isOpened()):
         success, image = video.read()
         frame_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         frame_gray = cv2.equalizeHist(frame_gray)
