@@ -19,6 +19,7 @@ face_cascade = cv2.CascadeClassifier()
 # Load the pretrained model
 face_cascade.load(cv2.samples.findFile("static/haarcascade_frontalface_alt.xml"))
 
+
 def initDB():
     db_path = os.path.join(os.path.dirname(__file__), 'app.db')
     db_uri = 'sqlite:///{}'.format(db_path)
@@ -35,8 +36,17 @@ def initDB():
                           ")")
     if not os.path.exists(os.path.join(os.path.dirname(__file__), 'uploads')):
         os.makedirs('uploads')
+    if not os.path.exists(os.path.join(os.path.dirname(__file__), 'uploads/camera')):
+        os.makedirs('uploads/camera')
+
+
+def getAllData():
+    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK ").fetchall())
+    return query
+
 
 initDB()
+
 
 def validate_image(stream):
     header = stream.read(512)
@@ -93,6 +103,7 @@ def upload_files():
         return '', 204
     return 'Bad request: Unimplemented method', 400
 
+
 @app.route('/display', methods=['POST', 'GET'])
 def display():
     if request.method == 'POST':
@@ -112,17 +123,20 @@ def display():
         else:
             return render_template('upload.html')
 
+
 @app.route('/uploads/<filename>')
 def send_file(filename):
     return send_from_directory('uploads', filename)
 
+
 @app.route('/get_value', methods=['POST', 'GET'])
 def get_value():
-    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK ").fetchall())
+    query = getAllData()
     if len(query) != 0:
-        return render_template('upload.html', value = query, len = len(query))
+        return render_template('upload.html', value=query, len=len(query))
     else:
         return render_template('upload.html')
+
 
 @app.route('/video_feed')
 def video_feed():
@@ -158,8 +172,6 @@ def gen():
 
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-
 
 
 if __name__ == "__main__":
