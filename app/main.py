@@ -83,7 +83,7 @@ def data():
 @app.route('/post', methods=['POST'])
 def get_data():
     requestData = request.get_json()
-    interestedID = requestData['id']  # TODO: логическая загвоздка - мы получаем картинку по id или по названию? Показывать id небезопасно, а значит пользователь не должен его ззнать, тем временем название изображения не гарантирует его уникальность
+    interestedID = requestData['id']
     query = list(db.engine.execute("SELECT PK_ID, PV_PATH, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(interestedID)).fetchall())
     if len(query) != 0:
         return jsonify({'id': query[0][0], 'name': query[0][2], 'file': base64.b64encode(open(query[0][1], mode='rb').read()).decode('utf-8')})  #
@@ -115,19 +115,16 @@ def upload_files():
     return 'Bad request: Unimplemented method', 400
 
 
-@app.route('/display', methods=['POST', 'GET'])
+@app.route('/display', methods=['GET'])  # 'POST',
 def display():
-    if request.method == 'POST':
-        id = request.form["id"]
-    else:
-        id = request.args.get('id')
+    _id = request.args.get('id')
 
-    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK WHERE V_NAME = '{}'".format(id)).fetchall())
+    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK WHERE V_NAME = '{}'".format(_id)).fetchall())
     if len(query) != 0:
         filename = str(query[0][0]) + str(os.path.splitext(query[0][1])[-1])
         return render_template('upload.html', filename=filename)
     else:
-        query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(id)).fetchall())
+        query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK WHERE PK_ID = '{}'".format(_id)).fetchall())
         if len(query) != 0:
             filename = str(query[0][0]) + str(os.path.splitext(query[0][1])[-1])
             return render_template('upload.html', filename=filename)
@@ -140,7 +137,7 @@ def send_file(filename):
     return send_from_directory('uploads', filename)
 
 
-@app.route('/get_value', methods=['POST', 'GET'])
+@app.route('/get_value', methods=['GET'])  # 'POST',
 def get_value():
     query = getAllData()
     if len(query) != 0:
