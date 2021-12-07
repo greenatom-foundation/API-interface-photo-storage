@@ -14,6 +14,11 @@ void main() {
 
 TextStyle buttonTxt = TextStyle(fontSize: 16, color: Colors.white,);
 TextStyle headerTxt = TextStyle(fontSize: 20, color: Colors.white);
+Gradient _back = LinearGradient(
+    begin: Alignment.bottomLeft,
+    end: Alignment.topRight,
+    colors: [Colors.lightBlueAccent, Colors.white]
+);
 
 class MyApp extends StatelessWidget {
   @override
@@ -26,7 +31,12 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(title: Text("AtomHack: team #10", style: headerTxt, textAlign: TextAlign.center,), centerTitle: true,),
-        body: startPage(),
+        body: Container(
+          child: startPage(),
+          decoration: BoxDecoration(
+              gradient: _back,
+          ),
+        ),
       ),
     );
   }
@@ -79,10 +89,8 @@ class showDataPage extends StatefulWidget {
 }
 
 class _showDataPageState extends State<showDataPage> {
-  String _data = 'empty';
   Map _finalRes = {};
   Map _listData = {};
-  Uint8List _image;
 
   _search(String s){
     if(_finalRes.isNotEmpty && s.length>0){
@@ -161,24 +169,13 @@ class _showDataPageState extends State<showDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Проверка изображений', style: headerTxt),
-            GestureDetector(
-              onTap: (){
-                _getData();
-              },
-              child: Container(
-                padding: EdgeInsets.all(4),
-                child: Icon(Icons.update),
-              ),
-            )
-          ],
-        ),
+        title: Text('Проверка изображений', style: headerTxt),
       ),
       body: Center(
         child: Container(
+          decoration: BoxDecoration(
+            gradient: _back,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -197,17 +194,18 @@ class _showDataPageState extends State<showDataPage> {
                   },
                 ),
               ),
-              Text('Data: ' + _data),
               SizedBox(height: 12,),
               _listBuilder(),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _getData,
+        backgroundColor: Color(0xFF193A7B),
         tooltip: 'Increment',
-        child: Icon(Icons.find_in_page_rounded),
+        icon: Icon(Icons.find_in_page_rounded,),
+        label: Text(_finalRes.keys.length==0?'Get data':"Count: "+_finalRes.keys.length.toString(), style: buttonTxt,),
       ),
     );
   }
@@ -351,7 +349,9 @@ class _addDataPage extends State<addDataPage> {
       appBar: AppBar(
         title: Text("Загрузка изображений", style: headerTxt,),
       ),
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(gradient: _back),
+        alignment: Alignment.center,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 12),
           child: Column(
