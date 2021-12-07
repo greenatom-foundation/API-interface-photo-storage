@@ -202,8 +202,8 @@ def video_feed():
 def gen():
     i = 0
     #while True:
-    video = cv2.VideoCapture(0)
-    #video = cv2.VideoCapture('768x576.avi')
+    #video = cv2.VideoCapture(0)
+    video = cv2.VideoCapture('video_2021-12-07_20-56-24_384.mp4')
     while (video.isOpened()):
         success, image = video.read()
         frame_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
