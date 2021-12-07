@@ -1,17 +1,18 @@
-<html>
-  <head>
-      <meta charset="UTF-8">
-    <title>Загрузка фото</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Команда 10</title>
     <link rel="stylesheet" href="static/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.1/min/dropzone.min.js"></script>
-  </head>
-  <body>
-    <div class="split left">
+</head>
+<body>
+
+    <div class="split leftS">
       <div class="centeredL">
-        <h1>Загрузка фотографий</h1>
-        <form action="{{ url_for('upload_files') }}" class="dropzone"></form> </br></br>
-        <a href="{{ url_for('video') }}" class="s13" >Загрузка кадров из видео</a>
+        <h1>Сохранение кадров видео</h1>
+        <img src="{{ url_for('video_feed') }}" width="100%"> </br></br>
+        <a href="{{ url_for('index') }}", class="s13">Вернуться к загрузке фото</a>
       </div>
     </div>
 
@@ -45,5 +46,9 @@
       </div>
     </div>
 
-  </body>
+
+
+
+</body>
 </html>
+

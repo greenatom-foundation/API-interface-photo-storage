@@ -146,16 +146,18 @@ def get_value():
         return render_template('upload.html')
 
 
+
+
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 def gen():
     i = 0
     #while True:
     video = cv2.VideoCapture(0)
+    #video = cv2.VideoCapture('768x576.avi')
     while (video.isOpened()):
         success, image = video.read()
         frame_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -181,9 +183,14 @@ def gen():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
+@app.route('/video')
+def video():
+    """Video streaming home page."""
+    return render_template('video.html')
+
 
 if __name__ == "__main__":
     WSGIRequestHandler.protocol_version = "HTTP/1.1"
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', threaded=True)
 
 
