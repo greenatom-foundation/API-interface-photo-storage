@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
 app.config['UPLOAD_PATH'] = 'uploads'
-app.config['UPLOAD_CAMERA'] = 'uploads/camera'
+app.config['UPLOAD_PATH_VIDEO'] = 'uploads/video'
 db = SQLAlchemy(app)
 face_cascade = cv2.CascadeClassifier()
 # Load the pretrained model
@@ -35,14 +35,25 @@ def initDB():
                           " V_NAME          VARCHAR(255) NULL,"
                           " PRIMARY KEY (PK_ID)"
                           ")")
+        db.engine.execute("CREATE TABLE T_LINK_VIDEO"
+                          "("
+                          " PK_ID           VARCHAR(60) NOT NULL,"
+                          " PV_PATH         VARCHAR(255) NOT NULL,"
+                          " V_NAME          VARCHAR(255) NULL,"
+                          " PRIMARY KEY (PK_ID)"
+                          ")")
     if not os.path.exists(os.path.join(os.path.dirname(__file__), 'uploads')):
         os.makedirs('uploads')
-    if not os.path.exists(os.path.join(os.path.dirname(__file__), 'uploads/camera')):
-        os.makedirs('uploads/camera')
+    if not os.path.exists(os.path.join(os.path.dirname(__file__), 'uploads/video')):
+        os.makedirs('uploads/video')
 
 
 def getAllData():
     query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK ").fetchall())
+    return query
+
+def getAllDataVideo():
+    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK_VIDEO ").fetchall())
     return query
 
 
@@ -79,6 +90,15 @@ def data():
         res[i]["V_NAME"] = tmp[i]["V_NAME"]
     return jsonify(res)
 
+@app.route('/postallvideo', methods=['POST', 'GET'])
+def data_video():
+    res = {}
+    tmp = getAllDataVideo()
+    for i in range(len(tmp)):
+        res[i] = {}
+        res[i]["PK_ID"] = tmp[i]["PK_ID"]
+        res[i]["V_NAME"] = tmp[i]["V_NAME"]
+    return jsonify(res)
 
 @app.route('/post', methods=['POST'])
 def get_data():
@@ -132,10 +152,29 @@ def display():
             return render_template('upload.html')
 
 
+@app.route('/display_video', methods=['GET'])  # 'POST',
+def display_video():
+    _id = request.args.get('id')
+
+    query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK_VIDEO WHERE V_NAME = '{}'".format(_id)).fetchall())
+    if len(query) != 0:
+        filename = str(query[0][0]) + str(os.path.splitext(query[0][1])[-1])
+        return render_template('video.html', filename=filename)
+    else:
+        query = list(db.engine.execute("SELECT PK_ID, V_NAME FROM T_LINK_VIDEO WHERE PK_ID = '{}'".format(_id)).fetchall())
+        if len(query) != 0:
+            filename = str(query[0][0]) + str(os.path.splitext(query[0][1])[-1])
+            return render_template('video.html', filename=filename)
+        else:
+            return render_template('video.html')
+
 @app.route('/uploads/<filename>')
 def send_file(filename):
-    return send_from_directory('uploads', filename)
+    return send_from_directory(app.config['UPLOAD_PATH'], filename)
 
+@app.route('/uploads/video/<filename>')
+def send_file_video(filename):
+    return send_from_directory(app.config['UPLOAD_PATH_VIDEO'], filename)
 
 @app.route('/get_value', methods=['GET'])  # 'POST',
 def get_value():
@@ -145,6 +184,13 @@ def get_value():
     else:
         return render_template('upload.html')
 
+@app.route('/get_value_video', methods=['GET'])  # 'POST',
+def get_value_video():
+    query = getAllDataVideo()
+    if len(query) != 0:
+        return render_template('video.html', value=query, len=len(query))
+    else:
+        return render_template('video.html')
 
 
 
@@ -177,7 +223,18 @@ def gen():
         frame = jpeg.tobytes()
 
         if i % 5 == 0:
-            cv2.imwrite(os.path.join(app.config['UPLOAD_CAMERA'], str(i) + '.jpg'), image)
+            lnk = str(uuid.uuid4())
+            filename = str(lnk) + '.jpg'
+            cv2.imwrite(os.path.join(app.config['UPLOAD_PATH_VIDEO'], filename), image)
+
+            file_ext = os.path.splitext(filename)[1]
+            db.engine.execute("INSERT INTO T_LINK_VIDEO(PK_ID, PV_PATH, V_NAME) VALUES('{}', '{}', '{}')".format(lnk,
+                                                                                                               os.path.join(
+                                                                                                                   app.config[
+                                                                                                                       'UPLOAD_PATH_VIDEO'],
+                                                                                                                   lnk + file_ext),
+                                                                                                               filename))
+
         i += 1
 
         yield (b'--frame\r\n'

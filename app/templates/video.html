@@ -18,19 +18,19 @@
 
     <div class="split right">
       <div class="centeredR">
-        <form method="GET" action={{url_for('display')}}>
+        <form method="GET" action={{url_for('display_video')}}>
           <div class="d7"><input placeholder="Поиск по id или имени + Enter" name="id" type="search" onkeyup="filtration()" ></div>
 	    </form>
 
         {% if filename %}
-          <img src="{{ url_for('send_file', filename=filename) }}" />
+          <img src="{{ url_for('send_file_video', filename=filename) }}" />
         {% else %}
           <h1>...</h1>
         {% endif %}
 
         <br>
         <br>
-        <form method="GET" action={{url_for('get_value')}}>
+        <form method="GET" action={{url_for('get_value_video')}}>
           <input type="submit" value="Вывод информации о фотографиях ">
 	    </form>
          {% if value %}
