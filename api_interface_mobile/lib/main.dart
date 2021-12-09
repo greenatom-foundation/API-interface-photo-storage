@@ -226,12 +226,20 @@ class _addDataPage extends State<addDataPage> {
   Widget _imageBox(){
     if (_data != null)
       return Container(
-        width: MediaQuery.of(context).size.width*.8,
+        //width: MediaQuery.of(context).size.width*.8,
         height: MediaQuery.of(context).size.width*.8,
-        color: Theme.of(context).primaryColor,
+        alignment: Alignment.center,
+        //color: Theme.of(context).primaryColor,
         child: Stack(
           children: [
-            Image.file(_data),
+            Container(
+              child: Image.file(
+                _data,
+                height: MediaQuery.of(context).size.width*.8,
+                alignment: Alignment.center,
+              ),
+              alignment: Alignment.center,
+            ),
             Align(
               alignment: Alignment.topRight,
               child: GestureDetector(
